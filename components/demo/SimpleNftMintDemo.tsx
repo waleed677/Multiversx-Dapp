@@ -1,4 +1,12 @@
-import { Link, Text } from '@chakra-ui/react';
+import { HStack, Input, Link, Text } from '@chakra-ui/react';
+import { useEffect } from 'react';
+import {
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+} from '@chakra-ui/react';
 import {
   U32Value,
   ContractFunction,
@@ -9,56 +17,115 @@ import {
   useTransaction,
   TransactionCallbackParams,
   useConfig,
+  useScQuery,
+  SCQueryType,
 } from '@useelven/core';
-import { useCallback } from 'react';
+import BigNumber from 'bignumber.js';
+import { useElvenScQuery } from './useElevenScQuery';
+import { useCallback, useState } from 'react';
 import { ActionButton } from '../tools/ActionButton';
 import { shortenHash } from '../../utils/shortenHash';
 import { FlexCardWrapper } from '../ui/CardWrapper';
+import abi from '../../abi.json';
 
-const mintSmartContractAddress =
-  process.env.NEXT_PUBLIC_MINT_SMART_CONTRACT_ADDRESS || '';
-const mintFunctionName = process.env.NEXT_PUBLIC_MINT_FUNCTION_NAME || '';
-const mintPaymentPerToken =
-  process.env.NEXT_PUBLIC_MINT_PAYMENT_PER_TOKEN || '';
+// Interface
+type BigUint = string; // Use string to represent BigUint in your DApp
+const SmartContractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '';
+const getTokenFunctionName = process.env.NEXT_PUBLIC_FUNCTION_NAME || '';
 
 export const SimpleNftMintDemo = ({
   cb,
 }: {
   cb: (params: TransactionCallbackParams) => void;
 }) => {
-  const { pending, triggerTx } = useTransaction({ cb });
-  const { explorerAddress, chainType } = useConfig();
+  // const { pending, triggerTx } = useTransaction({ cb });
 
-  const handleSendTx = useCallback(() => {
-    // Prepare data payload for smart contract using MultiversX JS SDK core tools
-    const data = new ContractCallPayloadBuilder()
-      .setFunction(new ContractFunction(mintFunctionName))
-      .setArgs([new U32Value(1)])
-      .build();
+  const [tokens, setTokensAmount] = useState<string>('');
+  const [elgdPrice, setelgdPrice] = useState<string>('');
+  const [tokenSellingPrice, setTokenSellingPrice] = useState<number>();
 
-    triggerTx({
-      address: mintSmartContractAddress,
-      gasLimit: 14000000,
-      value: TokenTransfer.egldFromAmount(mintPaymentPerToken),
-      data,
-    });
-  }, [triggerTx]);
+  // Token Price
+  const { data: tokenPrice } = useElvenScQuery<number>({
+    funcName: 'get_token_price',
+    type: SCQueryType.NUMBER,
+  });
+
+  const { data: price } = useElvenScQuery<number>({
+    funcName: 'get_usdc_to_egld',
+    type: SCQueryType.NUMBER,
+    args: [tokens],
+    autoInit: tokens !== '',
+  });
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const amount = event.target.value;
+    const totalTokenToBuy =
+      tokenSellingPrice !== undefined
+        ? parseInt(amount) * tokenSellingPrice
+        : 0;
+    let hexValue = totalTokenToBuy.toString(16);
+    if (hexValue.length % 2 !== 0) {
+      hexValue = '0' + hexValue;
+    }
+
+    setTokensAmount(hexValue);
+  };
+
+  useEffect(() => {
+    if (tokenPrice !== null || tokenPrice !== undefined) {
+      setTokenSellingPrice(tokenPrice);
+    }
+  }, [tokenPrice]);
+
+  useEffect(() => {
+    if (price !== null && price !== undefined) {
+      let egldPrice = (price / 1e18).toFixed(5);
+      setelgdPrice(egldPrice.toString());
+      console.log({ egldPrice });
+    }
+  }, [price]);
 
   return (
     <FlexCardWrapper>
-      <Text mb={4}>
+      <HStack spacing={10} mb={10} direction={['column', 'row']} width="80%">
+        <NumberInput size={'lg'} width="100%">
+          <NumberInputField
+            value={tokens?.toString()}
+            placeholder="Enter Tokens"
+            onChange={handleInputChange}
+          />
+        </NumberInput>
+
+        <Input
+          size={'lg'}
+          width="100%"
+          readOnly
+          placeholder="egld price"
+          value={elgdPrice?.toString()}
+        />
+
+        {/* <NumberInput size={'lg'} width="100%">
+          <NumberInputField
+            placeholder="Accel Tokens"
+            value={
+              tokenSellingPrice !== null ? tokenSellingPrice.toString() : ''
+            }
+          />
+        </NumberInput> */}
+      </HStack>
+      {/* <Text mb={4}>
         2. You will be minting one NFT using{' '}
         <a href="https://www.elven.tools">Elven Tools</a> smart contract: <br />
         <Link
-          href={`${explorerAddress}/accounts/${mintSmartContractAddress}`}
+          href={`${explorerAddress}/accounts/${SmartContractAddress}`}
           fontWeight="bold"
         >
-          {shortenHash(mintSmartContractAddress, 8)}
+          {shortenHash(SmartContractAddress, 8)}
         </Link>{' '}
         <br />({chainType}, max 10 NFTs per address)
-      </Text>
-      <ActionButton disabled={pending} onClick={handleSendTx}>
-        <Text>Mint</Text>
+      </Text> */}
+      <ActionButton onClick={fetch}>
+        <Text>Buy Now</Text>
       </ActionButton>
     </FlexCardWrapper>
   );

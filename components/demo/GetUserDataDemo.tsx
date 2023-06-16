@@ -25,7 +25,7 @@ export const GetUserDataDemo = () => {
           {shortenHash(address, 8)}
         </Link>
       </CardItemWrapper>
-      <CardItemWrapper>
+      {/* <CardItemWrapper>
         <Text as="span" display="inline-block" fontWeight="bold">
           nonce:
         </Text>{' '}
@@ -40,7 +40,7 @@ export const GetUserDataDemo = () => {
               TokenTransfer.egldFromBigInteger(balance).toPrettyString()
             )
           : '-'}
-      </CardItemWrapper>
+      </CardItemWrapper> */}
     </FlexCardWrapper>
   );
 };

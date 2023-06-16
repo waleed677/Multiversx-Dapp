@@ -7,5 +7,5 @@ export const dappHostname = process.env.NEXT_PUBLIC_DAPP_HOST;
 export const defaultMetaTags = {
   title: 'Accel Finance',
   description: 'Accel Finance for the MultiversX blockchain.',
-  image: `${dappHostname}/og-image.png`,
+  image: `${dappHostname}/logo.png`,
 };

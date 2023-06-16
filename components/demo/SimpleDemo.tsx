@@ -71,9 +71,9 @@ export const SimpleDemo = () => {
   return (
     <Box position="relative">
       <Flex gap={8} flexWrap="wrap" justifyContent="center" mb={4}>
-        <SimpleEGLDTxDemo cb={handleTxCb} />
+        {/* <SimpleEGLDTxDemo cb={handleTxCb} /> */}
         <SimpleNftMintDemo cb={handleTxCb} />
-        <SimpleScQeryDemo cb={handleQueryCb} />
+        {/* <SimpleScQeryDemo cb={handleQueryCb} /> */}
       </Flex>
       {error && (
         <FlexCardWrapper
@@ -107,9 +107,7 @@ export const SimpleDemo = () => {
             </Box>
           )}
           {loginMethod === LoginMethodsEnum.ledger && (
-            <Box>
-              Confirm it on the Ledger app and wait till it finishes.
-            </Box>
+            <Box>Confirm it on the Ledger app and wait till it finishes.</Box>
           )}
           <Box>You will get the transaction hash and link at the end.</Box>
           <Spinner mt={6} color="dappTemplate.color2.darker" />

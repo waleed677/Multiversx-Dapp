@@ -33,6 +33,9 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-social-icons": "5.15.0",
+    "stream-browserify": "3.0.0",
+    "bignumber.js": "9.1.1",
+    "crypto-browserify": "3.12.0",
     "stream-browserify": "3.0.0"
   },
   "devDependencies": {
