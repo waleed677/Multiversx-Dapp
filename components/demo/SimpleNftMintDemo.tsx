@@ -103,27 +103,8 @@ export const SimpleNftMintDemo = ({
           placeholder="egld price"
           value={elgdPrice?.toString()}
         />
-
-        {/* <NumberInput size={'lg'} width="100%">
-          <NumberInputField
-            placeholder="Accel Tokens"
-            value={
-              tokenSellingPrice !== null ? tokenSellingPrice.toString() : ''
-            }
-          />
-        </NumberInput> */}
       </HStack>
-      {/* <Text mb={4}>
-        2. You will be minting one NFT using{' '}
-        <a href="https://www.elven.tools">Elven Tools</a> smart contract: <br />
-        <Link
-          href={`${explorerAddress}/accounts/${SmartContractAddress}`}
-          fontWeight="bold"
-        >
-          {shortenHash(SmartContractAddress, 8)}
-        </Link>{' '}
-        <br />({chainType}, max 10 NFTs per address)
-      </Text> */}
+
       <ActionButton onClick={fetch}>
         <Text>Buy Now</Text>
       </ActionButton>
