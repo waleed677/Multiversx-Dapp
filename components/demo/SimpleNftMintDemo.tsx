@@ -1,12 +1,6 @@
-import { HStack, Input, Link, Text } from '@chakra-ui/react';
-import { useEffect } from 'react';
-import {
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-} from '@chakra-ui/react';
+import { HStack, Input, Text } from '@chakra-ui/react';
+import { useEffect, useRef } from 'react';
+import { NumberInput, NumberInputField } from '@chakra-ui/react';
 import {
   U32Value,
   ContractFunction,
@@ -17,33 +11,28 @@ import {
   useTransaction,
   TransactionCallbackParams,
   useConfig,
-  useScQuery,
   SCQueryType,
 } from '@useelven/core';
-import BigNumber from 'bignumber.js';
 import { useElvenScQuery } from './useElevenScQuery';
 import { useCallback, useState } from 'react';
 import { ActionButton } from '../tools/ActionButton';
-import { shortenHash } from '../../utils/shortenHash';
 import { FlexCardWrapper } from '../ui/CardWrapper';
-import abi from '../../abi.json';
 
 // Interface
-type BigUint = string; // Use string to represent BigUint in your DApp
 const SmartContractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '';
-const getTokenFunctionName = process.env.NEXT_PUBLIC_FUNCTION_NAME || '';
 
 export const SimpleNftMintDemo = ({
   cb,
 }: {
   cb: (params: TransactionCallbackParams) => void;
 }) => {
-  // const { pending, triggerTx } = useTransaction({ cb });
-
+  const { triggerTx } = useTransaction({ cb });
   const [tokens, setTokensAmount] = useState<string>('');
   const [elgdPrice, setelgdPrice] = useState<string>('');
   const [tokenSellingPrice, setTokenSellingPrice] = useState<number>();
 
+  const tokensInputRef = useRef<HTMLInputElement | null>(null);
+  const tokensValue = parseInt(tokensInputRef.current?.value || '0');
   // Token Price
   const { data: tokenPrice } = useElvenScQuery<number>({
     funcName: 'get_token_price',
@@ -58,18 +47,37 @@ export const SimpleNftMintDemo = ({
   });
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const amount = event.target.value;
-    const totalTokenToBuy =
-      tokenSellingPrice !== undefined
-        ? parseInt(amount) * tokenSellingPrice
-        : 0;
-    let hexValue = totalTokenToBuy.toString(16);
-    if (hexValue.length % 2 !== 0) {
-      hexValue = '0' + hexValue;
-    }
+    if (parseInt(event.target.value) !== 0 && event.target.value !== '') {
+      let amount = parseInt(event.target.value);
 
-    setTokensAmount(hexValue);
+      amount = amount < 1000 ? 1000 : amount;
+      amount = amount > 10000 ? 10000 : amount;
+
+      const totalTokenToBuy =
+        tokenSellingPrice !== undefined ? amount * tokenSellingPrice : 0;
+      let hexValue = totalTokenToBuy.toString(16);
+      if (hexValue.length % 2 !== 0) {
+        hexValue = '0' + hexValue;
+      }
+
+      setTokensAmount(hexValue);
+    }
   };
+
+  const handleSendTx = useCallback(() => {
+    const data = new ContractCallPayloadBuilder()
+      .setFunction(new ContractFunction('buy_token'))
+      .setArgs([new U32Value(1)])
+      .build();
+
+    console.log(data);
+    triggerTx({
+      address: SmartContractAddress,
+      gasLimit: 14000000,
+      value: TokenTransfer.egldFromAmount(elgdPrice),
+      data,
+    });
+  }, [triggerTx]);
 
   useEffect(() => {
     if (tokenPrice !== null || tokenPrice !== undefined) {
@@ -81,17 +89,17 @@ export const SimpleNftMintDemo = ({
     if (price !== null && price !== undefined) {
       let egldPrice = (price / 1e18).toFixed(5);
       setelgdPrice(egldPrice.toString());
-      console.log({ egldPrice });
     }
   }, [price]);
 
   return (
     <FlexCardWrapper>
       <HStack spacing={10} mb={10} direction={['column', 'row']} width="80%">
-        <NumberInput size={'lg'} width="100%">
+        <NumberInput size={'lg'} width="100%" min={1000} max={10000}>
           <NumberInputField
+            ref={tokensInputRef}
             value={tokens?.toString()}
-            placeholder="Enter Tokens"
+            placeholder="Token Range 1000 - 10000"
             onChange={handleInputChange}
           />
         </NumberInput>
@@ -101,11 +109,11 @@ export const SimpleNftMintDemo = ({
           width="100%"
           readOnly
           placeholder="egld price"
-          value={elgdPrice?.toString()}
+          value={!tokensValue ? '' : elgdPrice.toString()}
         />
       </HStack>
 
-      <ActionButton onClick={fetch}>
+      <ActionButton onClick={handleSendTx}>
         <Text>Buy Now</Text>
       </ActionButton>
     </FlexCardWrapper>

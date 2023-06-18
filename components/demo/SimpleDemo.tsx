@@ -7,9 +7,7 @@ import {
   useLoginInfo,
 } from '@useelven/core';
 import { FlexCardWrapper } from '../ui/CardWrapper';
-import { SimpleEGLDTxDemo } from './SimpleEGLDTxDemo';
 import { SimpleNftMintDemo } from './SimpleNftMintDemo';
-import { SimpleScQeryDemo } from './SimpleScQueryDemo';
 import { shortenHash } from '../../utils/shortenHash';
 import { ActionButton } from '../tools/ActionButton';
 
