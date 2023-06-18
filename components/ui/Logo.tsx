@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import { Box, Image, Text } from '@chakra-ui/react';
+import { Box, Image } from '@chakra-ui/react';
 
 export const Logo = () => {
   return (
@@ -11,7 +11,12 @@ export const Logo = () => {
         position="relative"
         userSelect="none"
       >
-        <Image src="logo.png" width={'150'} height={'150'} />
+        <Image
+          src="logo.png"
+          width={'150'}
+          height={'150'}
+          alt="Accel Finance"
+        />
       </Box>
     </NextLink>
   );

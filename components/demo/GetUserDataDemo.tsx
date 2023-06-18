@@ -5,7 +5,7 @@ import { FlexCardWrapper } from '../ui/CardWrapper';
 import { CardItemWrapper } from './CardItemWrapper';
 
 export const GetUserDataDemo = () => {
-  const { address, nonce, balance } = useAccount();
+  const { address } = useAccount();
   const { explorerAddress } = useConfig();
 
   return (

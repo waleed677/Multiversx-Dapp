@@ -1,6 +1,5 @@
 import { Box } from '@chakra-ui/react';
 import { FC } from 'react';
-import { SocialMediaIcons } from './SocialMediaIcons';
 import { LoginModalButton } from '../tools/LoginModalButton';
 
 interface HeaderMenuButtonsProps {

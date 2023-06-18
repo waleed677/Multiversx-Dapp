@@ -1,12 +1,5 @@
 import type { NextPage } from 'next';
-import {
-  ListItem,
-  Text,
-  OrderedList,
-  UnorderedList,
-  Flex,
-  Link,
-} from '@chakra-ui/react';
+import { Text, Flex } from '@chakra-ui/react';
 import { MainLayout } from '../components/ui/MainLayout';
 import { HeaderMenu } from '../components/ui/HeaderMenu';
 import { HeaderMenuButtons } from '../components/ui/HeaderMenuButtons';

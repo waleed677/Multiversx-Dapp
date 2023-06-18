@@ -39,26 +39,26 @@ export const SimpleDemo = () => {
     []
   );
 
-  const handleQueryCb = useCallback(
-    (queryResult: string, pending: boolean, error: string) => {
-      if (queryResult) {
-        setResult({ type: 'query', content: queryResult });
-        setPending(false);
-        setError(undefined);
-      }
-      if (pending) {
-        setPending(true);
-        setError(undefined);
-        setResult(undefined);
-      }
-      if (error) {
-        setError(error);
-        setPending(false);
-        setResult(undefined);
-      }
-    },
-    []
-  );
+  // const handleQueryCb = useCallback(
+  //   (queryResult: string, pending: boolean, error: string) => {
+  //     if (queryResult) {
+  //       setResult({ type: 'query', content: queryResult });
+  //       setPending(false);
+  //       setError(undefined);
+  //     }
+  //     if (pending) {
+  //       setPending(true);
+  //       setError(undefined);
+  //       setResult(undefined);
+  //     }
+  //     if (error) {
+  //       setError(error);
+  //       setPending(false);
+  //       setResult(undefined);
+  //     }
+  //   },
+  //   []
+  // );
 
   const handleClose = useCallback(() => {
     setResult(undefined);

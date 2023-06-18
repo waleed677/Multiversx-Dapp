@@ -10,7 +10,6 @@ import {
 import {
   useTransaction,
   TransactionCallbackParams,
-  useConfig,
   SCQueryType,
 } from '@useelven/core';
 import { useElvenScQuery } from './useElevenScQuery';
@@ -70,7 +69,6 @@ export const SimpleNftMintDemo = ({
       .setArgs([new U32Value(1)])
       .build();
 
-    console.log(data);
     triggerTx({
       address: SmartContractAddress,
       gasLimit: 14000000,
@@ -87,7 +85,7 @@ export const SimpleNftMintDemo = ({
 
   useEffect(() => {
     if (price !== null && price !== undefined) {
-      let egldPrice = (price / 1e18).toFixed(5);
+      const egldPrice = (price / 1e18).toFixed(5);
       setelgdPrice(egldPrice.toString());
     }
   }, [price]);
