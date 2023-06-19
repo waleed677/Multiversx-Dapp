@@ -27,6 +27,7 @@ export const SimpleNftMintDemo = ({
 }) => {
   const { triggerTx } = useTransaction({ cb });
   const [tokens, setTokensAmount] = useState<string>('');
+  const [tokensToSend, setTokensToSend] = useState<number>();
   const [elgdPrice, setelgdPrice] = useState<string>('');
   const [tokenSellingPrice, setTokenSellingPrice] = useState<number>();
 
@@ -51,7 +52,7 @@ export const SimpleNftMintDemo = ({
 
       amount = amount < 1000 ? 1000 : amount;
       amount = amount > 10000 ? 10000 : amount;
-
+      setTokensToSend(amount);
       const totalTokenToBuy =
         tokenSellingPrice !== undefined ? amount * tokenSellingPrice : 0;
       let hexValue = totalTokenToBuy.toString(16);
@@ -64,9 +65,11 @@ export const SimpleNftMintDemo = ({
   };
 
   const handleSendTx = useCallback(() => {
+    const tkn = tokensToSend !== undefined ? tokensToSend : 0;
+    const u32Value = new U32Value(tkn.toString());
     const data = new ContractCallPayloadBuilder()
       .setFunction(new ContractFunction('buy_token'))
-      .setArgs([new U32Value(1)])
+      .setArgs([u32Value])
       .build();
 
     triggerTx({
@@ -75,7 +78,7 @@ export const SimpleNftMintDemo = ({
       value: TokenTransfer.egldFromAmount(elgdPrice),
       data,
     });
-  }, [triggerTx]);
+  }, [triggerTx, tokens, elgdPrice]);
 
   useEffect(() => {
     if (tokenPrice !== null || tokenPrice !== undefined) {
@@ -85,7 +88,7 @@ export const SimpleNftMintDemo = ({
 
   useEffect(() => {
     if (price !== null && price !== undefined) {
-      const egldPrice = (price / 1e18).toFixed(5);
+      const egldPrice = price / 1e18;
       setelgdPrice(egldPrice.toString());
     }
   }, [price]);
